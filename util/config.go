@@ -13,6 +13,9 @@ type Config struct {
 	DBSource            string        `mapstructure:"DB_SOURCE"`
 	ServerAddress       string        `mapstructure:"SERVER_ADDRESS"`
 	TokenSymmetricKey   string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	CloudName           string        `mapstructure:"CLOUD_NAME"`
+	CloudApiKey         string        `mapstructure:"CLOUD_API_KEY"`
+	CloudApiSecret      string        `mapstructure:"CLOUD_API_SECRET"`
 	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 }
 

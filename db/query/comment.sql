@@ -6,6 +6,10 @@ INSERT INTO comments (
 )
 RETURNING *;
 
+-- name: GetCommentByID :one
+SELECT * FROM comments
+WHERE comment_id = $1;
+
 -- name: ListCommentsByPost :many
 SELECT * FROM comments
 WHERE post_id = $1
