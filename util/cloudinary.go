@@ -3,6 +3,8 @@ package util
 import (
 	"context"
 	"fmt"
+	"log"
+	"mime/multipart"
 	"os"
 
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -15,11 +17,12 @@ type CloudinaryService struct {
 
 // Initialize a CloudinaryService instance
 func NewCloudinaryService() (*CloudinaryService, error) {
-	cloudName := os.Getenv("CLOUD_NAME")
-	apiKey := os.Getenv("CLOUD_API_KEY")
-	apiSecret := os.Getenv("CLOUD_API_SECRET")
+	config, err := LoadConfig("../")
+	if err != nil {
+		log.Fatalln("cannot load config file:", err)
+	}
 
-	cld, err := cloudinary.NewFromParams(cloudName, apiKey, apiSecret)
+	cld, err := cloudinary.NewFromParams(config.CloudName, config.CloudApiKey, config.CloudApiSecret)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize Cloudinary: %w", err)
 	}
@@ -29,16 +32,11 @@ func NewCloudinaryService() (*CloudinaryService, error) {
 
 // Upload an image to Cloudinary from a local file path
 func (cs *CloudinaryService) UploadImage(ctx context.Context,
-	filePath string) (string, error) {
-	// Open the file for uploading
-	file, err := os.Open(filePath)
-	if err != nil {
-		return "", fmt.Errorf("failed to open file: %w", err)
-	}
-	defer file.Close()
-
-	// Log the file path for debugging
-	fmt.Printf("Uploading file from path: %s\n", filePath)
+	file *multipart.FileHeader) (string, error) {
+	// Remove from local
+	defer func() {
+		os.Remove("uploads/" + file.Filename)
+	}()
 
 	// Set the upload parameters (you can customize these as needed)
 	uploadParams := uploader.UploadParams{
@@ -68,12 +66,14 @@ func (cs *CloudinaryService) UploadImage(ctx context.Context,
 
 // Delete an image from Cloudinary by its Public ID
 func (cs *CloudinaryService) DeleteImage(ctx context.Context, publicID string) error {
-	_, err := cs.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{
-		PublicID: publicID,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to delete image from Cloudinary: %w", err)
-	}
-
-	return nil
+    result, err := cs.cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{
+        PublicID: publicID,
+    })
+    if err != nil {
+        return fmt.Errorf("failed to delete image from Cloudinary: %w", err)
+    }
+    if result.Result == "not found" {
+        return fmt.Errorf("image with publicID %s not found", publicID)
+    }
+    return nil
 }

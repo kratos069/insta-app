@@ -20,8 +20,10 @@ type Querier interface {
 	DeleteLike(ctx context.Context, arg DeleteLikeParams) error
 	DeletePost(ctx context.Context, postID int64) error
 	DeleteUser(ctx context.Context, userID int64) error
+	GetCommentByID(ctx context.Context, commentID int64) (Comment, error)
 	GetPostByID(ctx context.Context, postID int64) (Post, error)
 	GetUserByID(ctx context.Context, userID int64) (User, error)
+	GetUserByUsername(ctx context.Context, username string) (User, error)
 	ListCommentsByPost(ctx context.Context, postID int64) ([]Comment, error)
 	ListFollowers(ctx context.Context, followingID int64) ([]ListFollowersRow, error)
 	ListFollowing(ctx context.Context, followerID int64) ([]ListFollowingRow, error)
