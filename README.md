@@ -13,8 +13,17 @@ git remote -v
 git branch -M main
 git push -u origin main
 
-<!-- build docker image of project -->
+<!-- (1) build docker image of project -->
 docker build -t insta-app:latest .
+
+<!-- (2) creating a new network so postgres and insta can have same network -->
+docker network create insta-network
+
+<!-- (3) start container from built image -->
+docker run --name insta-app --network insta-network -p 8080:8080 -e GIN_MODE=release -e DB_SOURCE="postgresql://root:secret@postgres17:5432/insta-app?sslmode=disable" insta-app:latest
+
+<!-- (4) to connect network  -->
+docker network connect insta-network postgres17
 
 <!-- to check ip address of running container -->
 docker container inspect postgres17
@@ -22,17 +31,16 @@ docker container inspect postgres17
 <!-- remove a container -->
 docker rm insta-app
 
-<!-- start container from built image -->
-docker run --name insta-app --network insta-network -p 8080:8080 -e GIN_MODE=release -e DB_SOURCE="postgresql://root:secret@postgres17:5432/insta-app?sslmode=disable" insta-app:latest
-
 <!-- check networks of docker containers -->
 docker network ls
 
-<!-- for more details about a docker network (bridge is name) -->
+<!-- for more details about a docker network (bridge is name of network) -->
 docker network inspect bridge
 
-<!-- creating a new network so postgres and insta can have same network -->
-docker network create insta-network
+<!-- to lauch all services in a docker network at onnce using docker-compose -->
 
-<!-- to connect network  -->
-docker network connect insta-network postgres17
+<!-- to make file executable -->
+chmod +x start.sh
+
+<!-- command to move from windows download folder to current work dir -->
+mv /mnt/c/Users/Moazzan/Downloads/wait-for ./wait-for.sh
