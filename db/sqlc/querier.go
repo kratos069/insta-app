@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
@@ -14,6 +16,7 @@ type Querier interface {
 	CreateFollow(ctx context.Context, arg CreateFollowParams) error
 	CreateLike(ctx context.Context, arg CreateLikeParams) (Like, error)
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteComment(ctx context.Context, commentID int64) error
 	DeleteFollow(ctx context.Context, arg DeleteFollowParams) error
@@ -22,6 +25,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, userID int64) error
 	GetCommentByID(ctx context.Context, commentID int64) (Comment, error)
 	GetPostByID(ctx context.Context, postID int64) (Post, error)
+	GetSessionByID(ctx context.Context, id uuid.UUID) (Session, error)
 	GetUserByID(ctx context.Context, userID int64) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	ListCommentsByPost(ctx context.Context, postID int64) ([]Comment, error)

@@ -47,3 +47,6 @@ mv /mnt/c/Users/Moazzan/Downloads/wait-for ./wait-for.sh
 
 <!-- login to aws ecr using cli -->
 aws ecr get-login-password | docker login --username AWS --password-stdin 861833468085.dkr.ecr.ap-south-1.amazonaws.com
+
+<!-- sql file from dbml file -->
+dbml2sql --postgres -o doc/schema.sql doc/db.dbml

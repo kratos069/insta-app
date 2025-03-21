@@ -1,0 +1,47 @@
+Project insta_app {
+  database_type: 'PostgreSQL'
+  Note: '''
+    # Insta-app Database
+  '''
+}
+
+Table users as U {
+  user_id bigserial [pk]
+  username varchar [unique, not null]
+  hashed_password varchar [not null]
+  full_name varchar [not null]
+  profile_picture varchar [not null]
+  bio text [not null]
+  email varchar [unique, not null]
+  password_changed_at timestamptz [not null, default: '0001-01-01 00:00:00Z']
+  created_at timestamptz [default: `now()`, not null]
+}
+
+Table posts as P {
+  post_id bigserial [pk]
+  user_id bigserial [ref: > U.user_id, not null]
+  content_url varchar [not null]
+  caption text [not null]
+  created_at timestamptz [default: `now()`, not null]
+}
+
+Table comments {
+  comment_id bigserial [pk]
+  post_id bigserial [ref: > P.post_id, not null]
+  user_id bigserial [ref: > U.user_id, not null]
+  content text [not null]
+  created_at timestamptz [default: `now()`, not null]
+}
+
+Table likes {
+  like_id bigserial [pk]
+  post_id bigserial [ref: > P.post_id, not null]
+  user_id bigserial [ref: > U.user_id, not null]
+  created_at timestamptz [default: `now()`, not null]
+}
+
+Table follows {
+  follower_id bigserial [pk, ref: > U.user_id, not null]
+  following_id bigserial [pk, ref: > U.user_id, not null]
+  created_at timestamptz [default: `now()`, not null]
+}
