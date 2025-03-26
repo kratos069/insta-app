@@ -50,3 +50,20 @@ aws ecr get-login-password | docker login --username AWS --password-stdin 861833
 
 <!-- sql file from dbml file -->
 dbml2sql --postgres -o doc/schema.sql doc/db.dbml
+
+<!-- before merging changes with main branch -->
+git checkout -b ft/newFeature
+git add .
+git commit -m "new feature added"
+git push origin ft/newFeature
+(go to github, create pull, merge and delete feature branch)
+(back in terminal)
+git checkout main
+git pull
+
+<!-- using gRPC -->
+make server
+make evans
+package pb
+service InstaApp
+call CreateUser

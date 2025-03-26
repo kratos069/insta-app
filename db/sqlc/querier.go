@@ -33,6 +33,7 @@ type Querier interface {
 	ListFollowing(ctx context.Context, followerID int64) ([]ListFollowingRow, error)
 	ListPostsByUser(ctx context.Context, userID int64) ([]Post, error)
 	UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)
