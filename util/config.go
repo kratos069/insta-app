@@ -9,9 +9,12 @@ import (
 // config stores all configurations of the application
 // Values are read by Viper from config file or ENV variables
 type Config struct {
+	Environment          string        `mapstructure:"ENVIRONMENT"`
 	DBDriver             string        `mapstructure:"DB_DRIVER"`
 	DBSource             string        `mapstructure:"DB_SOURCE"`
-	ServerAddress        string        `mapstructure:"SERVER_ADDRESS"`
+	MigrationURL         string        `mapstructure:"MIGRATION_URL"`
+	HTTPServerAddress    string        `mapstructure:"HTTP_SERVER_ADDRESS"`
+	GRPCServerAddress    string        `mapstructure:"GRPC_SERVER_ADDRESS"`
 	TokenSymmetricKey    string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	CloudName            string        `mapstructure:"CLOUD_NAME"`
 	CloudApiKey          string        `mapstructure:"CLOUD_API_KEY"`
