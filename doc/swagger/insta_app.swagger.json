@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "rpc_create_user.proto",
+    "title": "post.proto",
     "version": "version not set"
   },
   "tags": [
@@ -16,6 +16,39 @@
     "application/json"
   ],
   "paths": {
+    "/v1/create_post": {
+      "post": {
+        "operationId": "InstaApp_CreatePost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbCreatePostResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " (streaming inputs)",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbCreatePostRequest"
+            }
+          }
+        ],
+        "tags": [
+          "InstaApp"
+        ]
+      }
+    },
     "/v1/create_user": {
       "post": {
         "operationId": "InstaApp_CreateUser",
@@ -41,6 +74,68 @@
             "schema": {
               "$ref": "#/definitions/pbCreateUserRequest"
             }
+          }
+        ],
+        "tags": [
+          "InstaApp"
+        ]
+      }
+    },
+    "/v1/delete_post/{postId}": {
+      "delete": {
+        "operationId": "InstaApp_DeletePost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbDeletePostResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "InstaApp"
+        ]
+      }
+    },
+    "/v1/get_post/{postId}": {
+      "get": {
+        "operationId": "InstaApp_GetPost",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbGetPostResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -114,6 +209,27 @@
     }
   },
   "definitions": {
+    "pbCreatePostRequest": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/pbMetadata",
+          "description": "Metadata must be sent as the first message."
+        },
+        "chunk": {
+          "$ref": "#/definitions/pbFileChunk",
+          "description": "Subsequent messages contain chunks of file data."
+        }
+      }
+    },
+    "pbCreatePostResponse": {
+      "type": "object",
+      "properties": {
+        "post": {
+          "$ref": "#/definitions/pbPost"
+        }
+      }
+    },
     "pbCreateUserRequest": {
       "type": "object",
       "properties": {
@@ -142,6 +258,32 @@
       "properties": {
         "user": {
           "$ref": "#/definitions/pbUser"
+        }
+      }
+    },
+    "pbDeletePostResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "pbFileChunk": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "format": "byte"
+        }
+      },
+      "description": "A chunk of file data."
+    },
+    "pbGetPostResponse": {
+      "type": "object",
+      "properties": {
+        "post": {
+          "$ref": "#/definitions/pbPost"
         }
       }
     },
@@ -176,6 +318,48 @@
           "format": "date-time"
         },
         "refreshTokenExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "pbMetadata": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "contentType": {
+          "type": "string"
+        }
+      },
+      "description": "Metadata about the post and file."
+    },
+    "pbPost": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "postId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "contentUrl": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "createdAt": {
           "type": "string",
           "format": "date-time"
         }

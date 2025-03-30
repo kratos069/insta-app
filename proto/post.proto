@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/insta-app/pb";
+
+message Post {
+    int64 user_id = 1;
+    int64 post_id = 2;
+    string content_url = 3;
+    string caption = 4;
+    google.protobuf.Timestamp created_at = 5;
+}

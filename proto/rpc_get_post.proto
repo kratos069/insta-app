@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package pb;
+
+import "post.proto";
+
+option go_package = "github.com/insta-app/pb";
+
+message GetPostRequest {
+    int64 post_id = 1;
+}
+
+message GetPostResponse {
+    Post post = 1;
+}
