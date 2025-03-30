@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "github.com/insta-app/pb";
+
+message DeletePostRequest {
+    int64 post_id = 1;
+  }
+  
+  message DeletePostResponse {
+    string message = 1;
+  }

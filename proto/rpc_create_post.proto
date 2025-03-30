@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package pb;
+
+import "post.proto";
+
+option go_package = "github.com/insta-app/pb";
+
+message CreatePostRequest {
+    oneof data {
+        // Metadata must be sent as the first message.
+        Metadata metadata = 1;
+        // Subsequent messages contain chunks of file data.
+        FileChunk chunk = 2;
+      }
+}
+
+// Metadata about the post and file.
+message Metadata {
+    int64 user_id = 1;
+    string caption = 2;
+    string file_name = 3;
+    string content_type = 4;
+  }
+  
+  // A chunk of file data.
+  message FileChunk {
+    bytes content = 1;
+  }
+
+message CreatePostResponse {
+    Post post = 1;
+}
