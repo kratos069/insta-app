@@ -1,12 +1,18 @@
 package db
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
 )
 
 // Store can do both queries and transcations
 type Store interface {
 	Querier
+	CreateUserTx(ctx context.Context,
+		arg CreateUserTxParams) (CreateUserTxResults, error)
+	VerifyEmailTx(ctx context.Context,
+		arg VerifyEmailTxParams) (VerifyEmailTxResults, error)
 }
 
 // SQLStore provides all funcs for SQL queries and transactions
@@ -25,20 +31,20 @@ func NewStore(db *sql.DB) Store {
 }
 
 // executes a function within a DB Transaction
-// func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
-// 	tx, err := store.db.BeginTx(ctx, nil)
-// 	if err != nil {
-// 		return err
-// 	}
+func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
+	tx, err := store.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
 
-// 	q := New(tx)
-// 	err = fn(q)
-// 	if err != nil {
-// 		if rbErr := tx.Rollback(); rbErr != nil {
-// 			return fmt.Errorf("txErr: %v, rbErr: %v", err, rbErr)
-// 		}
-// 		return err
-// 	}
+	q := New(tx)
+	err = fn(q)
+	if err != nil {
+		if rbErr := tx.Rollback(); rbErr != nil {
+			return fmt.Errorf("txErr: %v, rbErr: %v", err, rbErr)
+		}
+		return err
+	}
 
-// 	return tx.Commit()
-// }
+	return tx.Commit()
+}

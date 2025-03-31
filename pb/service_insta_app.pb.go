@@ -25,7 +25,7 @@ var File_service_insta_app_proto protoreflect.FileDescriptor
 
 const file_service_insta_app_proto_rawDesc = "" +
 	"\n" +
-	"\x17service_insta_app.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x15rpc_update_user.proto\x1a\x14rpc_login_user.proto\x1a\x15rpc_create_post.proto\x1a\x12rpc_get_post.proto\x1a\x15rpc_delete_post.proto2\xa0\x04\n" +
+	"\x17service_insta_app.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x15rpc_update_user.proto\x1a\x14rpc_login_user.proto\x1a\x15rpc_create_post.proto\x1a\x12rpc_get_post.proto\x1a\x15rpc_delete_post.proto\x1a\x16rpc_verify_email.proto2\xfa\x04\n" +
 	"\bInstaApp\x12W\n" +
 	"\n" +
 	"CreateUser\x12\x15.pb.CreateUserRequest\x1a\x16.pb.CreateUserResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/create_user\x12W\n" +
@@ -36,21 +36,24 @@ const file_service_insta_app_proto_rawDesc = "" +
 	"CreatePost\x12\x15.pb.CreatePostRequest\x1a\x16.pb.CreatePostResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/create_post(\x01\x12R\n" +
 	"\aGetPost\x12\x12.pb.GetPostRequest\x1a\x13.pb.GetPostResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/get_post/{post_id}\x12^\n" +
 	"\n" +
-	"DeletePost\x12\x15.pb.DeletePostRequest\x1a\x16.pb.DeletePostResponse\"!\x82\xd3\xe4\x93\x02\x1b*\x19/v1/delete_post/{post_id}B\x19Z\x17github.com/insta-app/pbb\x06proto3"
+	"DeletePost\x12\x15.pb.DeletePostRequest\x1a\x16.pb.DeletePostResponse\"!\x82\xd3\xe4\x93\x02\x1b*\x19/v1/delete_post/{post_id}\x12X\n" +
+	"\vVerifyEmail\x12\x16.pb.VerifyEmailRequest\x1a\x17.pb.VerifyEmailResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/verify_emailB\x19Z\x17github.com/insta-app/pbb\x06proto3"
 
 var file_service_insta_app_proto_goTypes = []any{
-	(*CreateUserRequest)(nil),  // 0: pb.CreateUserRequest
-	(*UpdateUserRequest)(nil),  // 1: pb.UpdateUserRequest
-	(*LoginUserRequest)(nil),   // 2: pb.LoginUserRequest
-	(*CreatePostRequest)(nil),  // 3: pb.CreatePostRequest
-	(*GetPostRequest)(nil),     // 4: pb.GetPostRequest
-	(*DeletePostRequest)(nil),  // 5: pb.DeletePostRequest
-	(*CreateUserResponse)(nil), // 6: pb.CreateUserResponse
-	(*UpdateUserResponse)(nil), // 7: pb.UpdateUserResponse
-	(*LoginUserResponse)(nil),  // 8: pb.LoginUserResponse
-	(*CreatePostResponse)(nil), // 9: pb.CreatePostResponse
-	(*GetPostResponse)(nil),    // 10: pb.GetPostResponse
-	(*DeletePostResponse)(nil), // 11: pb.DeletePostResponse
+	(*CreateUserRequest)(nil),   // 0: pb.CreateUserRequest
+	(*UpdateUserRequest)(nil),   // 1: pb.UpdateUserRequest
+	(*LoginUserRequest)(nil),    // 2: pb.LoginUserRequest
+	(*CreatePostRequest)(nil),   // 3: pb.CreatePostRequest
+	(*GetPostRequest)(nil),      // 4: pb.GetPostRequest
+	(*DeletePostRequest)(nil),   // 5: pb.DeletePostRequest
+	(*VerifyEmailRequest)(nil),  // 6: pb.VerifyEmailRequest
+	(*CreateUserResponse)(nil),  // 7: pb.CreateUserResponse
+	(*UpdateUserResponse)(nil),  // 8: pb.UpdateUserResponse
+	(*LoginUserResponse)(nil),   // 9: pb.LoginUserResponse
+	(*CreatePostResponse)(nil),  // 10: pb.CreatePostResponse
+	(*GetPostResponse)(nil),     // 11: pb.GetPostResponse
+	(*DeletePostResponse)(nil),  // 12: pb.DeletePostResponse
+	(*VerifyEmailResponse)(nil), // 13: pb.VerifyEmailResponse
 }
 var file_service_insta_app_proto_depIdxs = []int32{
 	0,  // 0: pb.InstaApp.CreateUser:input_type -> pb.CreateUserRequest
@@ -59,14 +62,16 @@ var file_service_insta_app_proto_depIdxs = []int32{
 	3,  // 3: pb.InstaApp.CreatePost:input_type -> pb.CreatePostRequest
 	4,  // 4: pb.InstaApp.GetPost:input_type -> pb.GetPostRequest
 	5,  // 5: pb.InstaApp.DeletePost:input_type -> pb.DeletePostRequest
-	6,  // 6: pb.InstaApp.CreateUser:output_type -> pb.CreateUserResponse
-	7,  // 7: pb.InstaApp.UpdateUser:output_type -> pb.UpdateUserResponse
-	8,  // 8: pb.InstaApp.LoginUser:output_type -> pb.LoginUserResponse
-	9,  // 9: pb.InstaApp.CreatePost:output_type -> pb.CreatePostResponse
-	10, // 10: pb.InstaApp.GetPost:output_type -> pb.GetPostResponse
-	11, // 11: pb.InstaApp.DeletePost:output_type -> pb.DeletePostResponse
-	6,  // [6:12] is the sub-list for method output_type
-	0,  // [0:6] is the sub-list for method input_type
+	6,  // 6: pb.InstaApp.VerifyEmail:input_type -> pb.VerifyEmailRequest
+	7,  // 7: pb.InstaApp.CreateUser:output_type -> pb.CreateUserResponse
+	8,  // 8: pb.InstaApp.UpdateUser:output_type -> pb.UpdateUserResponse
+	9,  // 9: pb.InstaApp.LoginUser:output_type -> pb.LoginUserResponse
+	10, // 10: pb.InstaApp.CreatePost:output_type -> pb.CreatePostResponse
+	11, // 11: pb.InstaApp.GetPost:output_type -> pb.GetPostResponse
+	12, // 12: pb.InstaApp.DeletePost:output_type -> pb.DeletePostResponse
+	13, // 13: pb.InstaApp.VerifyEmail:output_type -> pb.VerifyEmailResponse
+	7,  // [7:14] is the sub-list for method output_type
+	0,  // [0:7] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -83,6 +88,7 @@ func file_service_insta_app_proto_init() {
 	file_rpc_create_post_proto_init()
 	file_rpc_get_post_proto_init()
 	file_rpc_delete_post_proto_init()
+	file_rpc_verify_email_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

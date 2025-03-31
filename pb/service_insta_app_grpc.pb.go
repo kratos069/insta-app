@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	InstaApp_CreateUser_FullMethodName = "/pb.InstaApp/CreateUser"
-	InstaApp_UpdateUser_FullMethodName = "/pb.InstaApp/UpdateUser"
-	InstaApp_LoginUser_FullMethodName  = "/pb.InstaApp/LoginUser"
-	InstaApp_CreatePost_FullMethodName = "/pb.InstaApp/CreatePost"
-	InstaApp_GetPost_FullMethodName    = "/pb.InstaApp/GetPost"
-	InstaApp_DeletePost_FullMethodName = "/pb.InstaApp/DeletePost"
+	InstaApp_CreateUser_FullMethodName  = "/pb.InstaApp/CreateUser"
+	InstaApp_UpdateUser_FullMethodName  = "/pb.InstaApp/UpdateUser"
+	InstaApp_LoginUser_FullMethodName   = "/pb.InstaApp/LoginUser"
+	InstaApp_CreatePost_FullMethodName  = "/pb.InstaApp/CreatePost"
+	InstaApp_GetPost_FullMethodName     = "/pb.InstaApp/GetPost"
+	InstaApp_DeletePost_FullMethodName  = "/pb.InstaApp/DeletePost"
+	InstaApp_VerifyEmail_FullMethodName = "/pb.InstaApp/VerifyEmail"
 )
 
 // InstaAppClient is the client API for InstaApp service.
@@ -37,6 +38,7 @@ type InstaAppClient interface {
 	CreatePost(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[CreatePostRequest, CreatePostResponse], error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*GetPostResponse, error)
 	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
+	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*VerifyEmailResponse, error)
 }
 
 type instaAppClient struct {
@@ -110,6 +112,16 @@ func (c *instaAppClient) DeletePost(ctx context.Context, in *DeletePostRequest, 
 	return out, nil
 }
 
+func (c *instaAppClient) VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*VerifyEmailResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyEmailResponse)
+	err := c.cc.Invoke(ctx, InstaApp_VerifyEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InstaAppServer is the server API for InstaApp service.
 // All implementations must embed UnimplementedInstaAppServer
 // for forward compatibility.
@@ -120,6 +132,7 @@ type InstaAppServer interface {
 	CreatePost(grpc.ClientStreamingServer[CreatePostRequest, CreatePostResponse]) error
 	GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error)
 	DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error)
+	VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error)
 	mustEmbedUnimplementedInstaAppServer()
 }
 
@@ -147,6 +160,9 @@ func (UnimplementedInstaAppServer) GetPost(context.Context, *GetPostRequest) (*G
 }
 func (UnimplementedInstaAppServer) DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePost not implemented")
+}
+func (UnimplementedInstaAppServer) VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmail not implemented")
 }
 func (UnimplementedInstaAppServer) mustEmbedUnimplementedInstaAppServer() {}
 func (UnimplementedInstaAppServer) testEmbeddedByValue()                  {}
@@ -266,6 +282,24 @@ func _InstaApp_DeletePost_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InstaApp_VerifyEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstaAppServer).VerifyEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InstaApp_VerifyEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstaAppServer).VerifyEmail(ctx, req.(*VerifyEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InstaApp_ServiceDesc is the grpc.ServiceDesc for InstaApp service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -292,6 +326,10 @@ var InstaApp_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeletePost",
 			Handler:    _InstaApp_DeletePost_Handler,
+		},
+		{
+			MethodName: "VerifyEmail",
+			Handler:    _InstaApp_VerifyEmail_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
