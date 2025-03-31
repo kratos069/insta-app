@@ -9,6 +9,7 @@ import "rpc_login_user.proto";
 import "rpc_create_post.proto";
 import "rpc_get_post.proto";
 import "rpc_delete_post.proto";
+import "rpc_verify_email.proto";
 
 option go_package = "github.com/insta-app/pb";
 
@@ -45,6 +46,11 @@ service InstaApp {
     rpc DeletePost (DeletePostRequest) returns (DeletePostResponse) {
         option (google.api.http) = {
             delete: "/v1/delete_post/{post_id}"
+        };
+    }
+    rpc VerifyEmail (VerifyEmailRequest) returns (VerifyEmailResponse) {
+        option (google.api.http) = {
+            get: "/v1/verify_email"
         };
     }
 }

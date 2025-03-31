@@ -1,6 +1,6 @@
 -- SQL dump generated using DBML (dbml.dbdiagram.io)
 -- Database: PostgreSQL
--- Generated at: 2025-03-21T19:38:29.043Z
+-- Generated at: 2025-03-31T12:11:14.209Z
 
 CREATE TABLE "users" (
   "user_id" bigserial PRIMARY KEY,
@@ -10,8 +10,19 @@ CREATE TABLE "users" (
   "profile_picture" varchar NOT NULL,
   "bio" text NOT NULL,
   "email" varchar UNIQUE NOT NULL,
+  "is_email_verified" bool NOT NULL DEFAULT false,
   "password_changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
   "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "verify_emails" (
+  "id" bigserial PRIMARY KEY,
+  "username" varchar NOT NULL,
+  "email" varchar NOT NULL,
+  "secret_code" varchar NOT NULL,
+  "is_used" bool NOT NULL DEFAULT false,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "expired_at" timestamptz NOT NULL DEFAULT (now() + interval '15 minutes')
 );
 
 CREATE TABLE "posts" (
@@ -43,6 +54,8 @@ CREATE TABLE "follows" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   PRIMARY KEY ("follower_id", "following_id")
 );
+
+ALTER TABLE "verify_emails" ADD FOREIGN KEY ("username") REFERENCES "users" ("username");
 
 ALTER TABLE "posts" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
 

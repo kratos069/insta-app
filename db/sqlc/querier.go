@@ -18,6 +18,7 @@ type Querier interface {
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	DeleteComment(ctx context.Context, commentID int64) error
 	DeleteFollow(ctx context.Context, arg DeleteFollowParams) error
 	DeleteLike(ctx context.Context, arg DeleteLikeParams) error
@@ -34,6 +35,7 @@ type Querier interface {
 	ListPostsByUser(ctx context.Context, userID int64) ([]Post, error)
 	UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
+	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
 }
 
 var _ Querier = (*Queries)(nil)
