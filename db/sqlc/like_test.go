@@ -15,7 +15,7 @@ func createRandomLike(t *testing.T) Like {
 		PostID: post.PostID,
 	}
 
-	like, err := testQueries.CreateLike(context.Background(), arg)
+	like, err := testStore.CreateLike(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, like)
 
@@ -32,7 +32,7 @@ func TestCreateLike(t *testing.T) {
 func TestCountLikesByPost(t *testing.T) {
 	like := createRandomLike(t)
 
-	_, err := testQueries.CountLikesByPost(context.Background(), like.PostID)
+	_, err := testStore.CountLikesByPost(context.Background(), like.PostID)
 	require.NoError(t, err)
 }
 
@@ -44,6 +44,6 @@ func TestDeleteLike(t *testing.T) {
 		UserID: like.UserID,
 	}
 
-	err := testQueries.DeleteLike(context.Background(), arg)
+	err := testStore.DeleteLike(context.Background(), arg)
 	require.NoError(t, err)
 }

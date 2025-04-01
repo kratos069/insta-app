@@ -17,7 +17,7 @@ import (
 func (server *Server) CreatePost(stream grpc.ClientStreamingServer[pb.CreatePostRequest,
 	pb.CreatePostResponse]) error {
 	// authorization
-	authPayload, err := server.authorizeUser(stream.Context())
+	authPayload, err := server.authorizeUser(stream.Context(), []string{util.CustomerRole})
 	if err != nil {
 		return unauthenticatedError(err)
 	}

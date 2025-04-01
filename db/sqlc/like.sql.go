@@ -16,7 +16,7 @@ WHERE post_id = $1
 `
 
 func (q *Queries) CountLikesByPost(ctx context.Context, postID int64) ([]int64, error) {
-	rows, err := q.db.QueryContext(ctx, countLikesByPost, postID)
+	rows, err := q.db.Query(ctx, countLikesByPost, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -28,9 +28,6 @@ func (q *Queries) CountLikesByPost(ctx context.Context, postID int64) ([]int64, 
 			return nil, err
 		}
 		items = append(items, count)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -53,7 +50,7 @@ type CreateLikeParams struct {
 }
 
 func (q *Queries) CreateLike(ctx context.Context, arg CreateLikeParams) (Like, error) {
-	row := q.db.QueryRowContext(ctx, createLike, arg.UserID, arg.PostID)
+	row := q.db.QueryRow(ctx, createLike, arg.UserID, arg.PostID)
 	var i Like
 	err := row.Scan(
 		&i.LikeID,
@@ -75,6 +72,6 @@ type DeleteLikeParams struct {
 }
 
 func (q *Queries) DeleteLike(ctx context.Context, arg DeleteLikeParams) error {
-	_, err := q.db.ExecContext(ctx, deleteLike, arg.PostID, arg.UserID)
+	_, err := q.db.Exec(ctx, deleteLike, arg.PostID, arg.UserID)
 	return err
 }

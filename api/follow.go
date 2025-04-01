@@ -1,12 +1,12 @@
 package api
 
 import (
-	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/insta-app/db/sqlc"
 	"github.com/insta-app/token"
+	"github.com/jackc/pgx/v5"
 )
 
 type follow struct {
@@ -107,7 +107,7 @@ func (server *Server) listFollowers(ctx *gin.Context) {
 
 	followers, err := server.store.ListFollowers(ctx, input.UserIDList)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errResponse(err))
 			return
 		}
@@ -133,7 +133,7 @@ func (server *Server) listFollowing(ctx *gin.Context) {
 
 	following, err := server.store.ListFollowing(ctx, input.UserIDList)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errResponse(err))
 			return
 		}

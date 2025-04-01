@@ -2,11 +2,12 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 	"time"
 
 	"github.com/insta-app/util"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 )
 
@@ -23,7 +24,7 @@ func createRandomUser(t *testing.T) User {
 		Bio:            util.RandomString(10),
 	}
 
-	user, err := testQueries.CreateUser(context.Background(), arg)
+	user, err := testStore.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
@@ -44,7 +45,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUserByID(t *testing.T) {
 	user1 := createRandomUser(t)
-	user2, err := testQueries.GetUserByID(context.Background(), user1.UserID)
+	user2, err := testStore.GetUserByID(context.Background(), user1.UserID)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -60,12 +61,12 @@ func TestGetUserByID(t *testing.T) {
 
 func TestDeleteUser(t *testing.T) {
 	user := createRandomUser(t)
-	err := testQueries.DeleteUser(context.Background(), user.UserID)
+	err := testStore.DeleteUser(context.Background(), user.UserID)
 	require.NoError(t, err)
 
-	user2, err := testQueries.GetUserByID(context.Background(), user.UserID)
+	user2, err := testStore.GetUserByID(context.Background(), user.UserID)
 	require.Error(t, err)
-	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.EqualError(t, err, pgx.ErrNoRows.Error())
 	require.Empty(t, user2)
 }
 
@@ -73,9 +74,9 @@ func TestUpdateUserOnlyFullName(t *testing.T) {
 	oldUser := createRandomUser(t)
 
 	newFullName := util.RandomOwner()
-	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+	updatedUser, err := testStore.UpdateUser(context.Background(), UpdateUserParams{
 		Username: oldUser.Username,
-		FullName: sql.NullString{
+		FullName: pgtype.Text{
 			String: newFullName,
 			Valid:  true,
 		},
@@ -97,17 +98,17 @@ func TestUpdateUserAllFields(t *testing.T) {
 	newHashPassword, err := util.HashPassword(newPassword)
 	require.NoError(t, err)
 
-	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+	updatedUser, err := testStore.UpdateUser(context.Background(), UpdateUserParams{
 		Username: oldUser.Username,
-		FullName: sql.NullString{
+		FullName: pgtype.Text{
 			String: newFullName,
 			Valid:  true,
 		},
-		Email: sql.NullString{
+		Email: pgtype.Text{
 			String: newEmail,
 			Valid:  true,
 		},
-		HashedPassword: sql.NullString{
+		HashedPassword: pgtype.Text{
 			String: newHashPassword,
 			Valid:  true,
 		},

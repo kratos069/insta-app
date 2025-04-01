@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 	"time"
@@ -11,6 +10,7 @@ import (
 	db "github.com/insta-app/db/sqlc"
 	"github.com/insta-app/token"
 	"github.com/insta-app/util"
+	"github.com/jackc/pgx/v5"
 )
 
 type createUserRequest struct {
@@ -157,7 +157,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 
 	user, err := server.store.GetUserByUsername(ctx, input.Username)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errResponse(err))
 			return
 		}
@@ -176,6 +176,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
 		user.Username,
 		user.UserID,
+		user.Role,
 		server.config.AccessTokenDuration,
 	)
 	if err != nil {
@@ -187,6 +188,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(
 		user.Username,
 		user.UserID,
+		user.Role,
 		server.config.RefreshTokenDuration,
 	)
 	if err != nil {

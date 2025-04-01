@@ -16,7 +16,7 @@ func TestCreateFollow(t *testing.T) {
 		FollowingID: user2.UserID,
 	}
 
-	err := testQueries.CreateFollow(context.Background(), arg)
+	err := testStore.CreateFollow(context.Background(), arg)
 	require.NoError(t, err)
 }
 
@@ -29,7 +29,7 @@ func TestDeleteFollow(t *testing.T) {
 		FollowingID: user2.UserID,
 	}
 
-	err := testQueries.DeleteFollow(context.Background(), arg)
+	err := testStore.DeleteFollow(context.Background(), arg)
 	require.NoError(t, err)
 }
 
@@ -42,10 +42,10 @@ func TestListFollowers(t *testing.T) {
 		FollowingID: user2.UserID,
 	}
 
-	err := testQueries.CreateFollow(context.Background(), arg)
+	err := testStore.CreateFollow(context.Background(), arg)
 	require.NoError(t, err)
 
-	followers, err := testQueries.ListFollowers(context.Background(), user2.UserID)
+	followers, err := testStore.ListFollowers(context.Background(), user2.UserID)
 	require.NoError(t, err)
 	require.NotEmpty(t, followers)
 }
@@ -59,10 +59,10 @@ func TestListFollowing(t *testing.T) {
 		FollowingID: user2.UserID,
 	}
 
-	err := testQueries.CreateFollow(context.Background(), arg)
+	err := testStore.CreateFollow(context.Background(), arg)
 	require.NoError(t, err)
 
-	following, err := testQueries.ListFollowing(context.Background(), user1.UserID)
+	following, err := testStore.ListFollowing(context.Background(), user1.UserID)
 	require.NoError(t, err)
 	require.NotEmpty(t, following)
 }

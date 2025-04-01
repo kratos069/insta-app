@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -9,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	db "github.com/insta-app/db/sqlc"
 	"github.com/insta-app/token"
+	"github.com/jackc/pgx/v5"
 )
 
 type comment struct {
@@ -75,7 +75,7 @@ func (server *Server) deleteComment(ctx *gin.Context) {
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	fmt.Printf("Auth UserID: %v, Comment UserID: %v\n", authPayload.UserID, comment.UserID)
-	
+
 	if authPayload.UserID != comment.UserID {
 		err := errors.New("comment doesnot belong to the authenticated user")
 		ctx.JSON(http.StatusUnauthorized, errResponse(err))
@@ -104,7 +104,7 @@ func (server *Server) listCommentsByPost(ctx *gin.Context) {
 
 	post, err := server.store.GetPostByID(ctx, input.CommentPostID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errResponse(err))
 			return
 		}

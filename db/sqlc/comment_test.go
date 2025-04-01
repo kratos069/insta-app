@@ -17,7 +17,7 @@ func createRandomComment(t *testing.T) Comment {
 		Content: util.RandomString(15),
 	}
 
-	comment, err := testQueries.CreateComment(context.Background(), arg)
+	comment, err := testStore.CreateComment(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, comment)
 
@@ -35,7 +35,7 @@ func TestCreateComment(t *testing.T) {
 func TestListCommentsByPost(t *testing.T) {
 	comment := createRandomComment(t)
 
-	comments, err := testQueries.ListCommentsByPost(context.Background(), comment.PostID)
+	comments, err := testStore.ListCommentsByPost(context.Background(), comment.PostID)
 	require.NoError(t, err)
 	require.NotEmpty(t, comments)
 }
@@ -43,6 +43,6 @@ func TestListCommentsByPost(t *testing.T) {
 func TestDeleteComment(t *testing.T) {
 	comment := createRandomComment(t)
 
-	err := testQueries.DeleteComment(context.Background(), comment.CommentID)
+	err := testStore.DeleteComment(context.Background(), comment.CommentID)
 	require.NoError(t, err)
 }

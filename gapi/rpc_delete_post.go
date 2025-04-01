@@ -2,13 +2,13 @@ package gapi
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"path/filepath"
 	"strings"
 
 	"github.com/insta-app/pb"
 	"github.com/insta-app/util"
+	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -16,20 +16,20 @@ import (
 func (server *Server) DeletePost(ctx context.Context,
 	req *pb.DeletePostRequest) (*pb.DeletePostResponse, error) {
 	// authorization
-	authPayload, err := server.authorizeUser(ctx)
+	authPayload, err := server.authorizeUser(ctx, []string{util.AdminRole, util.CustomerRole})
 	if err != nil {
 		return nil, unauthenticatedError(err)
 	}
 
 	post, err := server.store.GetPostByID(ctx, req.PostId)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			return nil, status.Errorf(codes.NotFound, "post not found")
 		}
 		return nil, status.Errorf(codes.Internal, "failed to get post: %v", err)
 	}
 
-	if post.UserID != authPayload.UserID {
+	if authPayload.Role != util.AdminRole && post.UserID != authPayload.UserID {
 		return nil, status.Errorf(codes.PermissionDenied, "not authorized for deleting: %v", err)
 	}
 
@@ -49,15 +49,15 @@ func (server *Server) DeletePost(ctx context.Context,
 		}
 	}
 
-		// Delete the post from the database.
-		if err := server.store.DeletePost(ctx, post.PostID); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to delete post from db: %v", err)
-		}
-	
-		// Return a success message.
-		return &pb.DeletePostResponse{
-			Message: "post successfully deleted",
-		}, nil
+	// Delete the post from the database.
+	if err := server.store.DeletePost(ctx, post.PostID); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete post from db: %v", err)
+	}
+
+	// Return a success message.
+	return &pb.DeletePostResponse{
+		Message: "post successfully deleted",
+	}, nil
 }
 
 // Helper function to extract public ID from a Cloudinary URL

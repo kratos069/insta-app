@@ -2,11 +2,11 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 	"time"
 
 	"github.com/insta-app/util"
+	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,7 +19,7 @@ func createRandomPost(t *testing.T) Post {
 		Caption:    util.RandomString(15),
 	}
 
-	post, err := testQueries.CreatePost(context.Background(), arg)
+	post, err := testStore.CreatePost(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, post)
 
@@ -35,7 +35,7 @@ func TestCreatePost(t *testing.T) {
 func TestGetPostByID(t *testing.T) {
 	post1 := createRandomPost(t)
 
-	post2, err := testQueries.GetPostByID(context.Background(), post1.PostID)
+	post2, err := testStore.GetPostByID(context.Background(), post1.PostID)
 	require.NoError(t, err)
 	require.NotEmpty(t, post2)
 
@@ -49,7 +49,7 @@ func TestGetPostByID(t *testing.T) {
 func TestListPostsByUser(t *testing.T) {
 	post := createRandomPost(t)
 
-	posts, err := testQueries.ListPostsByUser(context.Background(), post.UserID)
+	posts, err := testStore.ListPostsByUser(context.Background(), post.UserID)
 	require.NoError(t, err)
 	require.NotEmpty(t, posts)
 }
@@ -62,7 +62,7 @@ func TestUpdatePost(t *testing.T) {
 		Caption: util.RandomString(9),
 	}
 
-	updatedPost, err := testQueries.UpdatePost(context.Background(), arg)
+	updatedPost, err := testStore.UpdatePost(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, updatedPost)
 
@@ -72,11 +72,11 @@ func TestUpdatePost(t *testing.T) {
 func TestDeletePost(t *testing.T) {
 	post := createRandomPost(t)
 
-	err := testQueries.DeletePost(context.Background(), post.PostID)
+	err := testStore.DeletePost(context.Background(), post.PostID)
 	require.NoError(t, err)
 
-	post2, err := testQueries.GetPostByID(context.Background(), post.PostID)
+	post2, err := testStore.GetPostByID(context.Background(), post.PostID)
 	require.Error(t, err)
-	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.EqualError(t, err, pgx.ErrNoRows.Error())
 	require.Empty(t, post2)
 }
