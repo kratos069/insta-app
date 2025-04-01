@@ -26,7 +26,7 @@ type CreateFollowParams struct {
 }
 
 func (q *Queries) CreateFollow(ctx context.Context, arg CreateFollowParams) error {
-	_, err := q.db.ExecContext(ctx, createFollow, arg.FollowerID, arg.FollowingID)
+	_, err := q.db.Exec(ctx, createFollow, arg.FollowerID, arg.FollowingID)
 	return err
 }
 
@@ -41,7 +41,7 @@ type DeleteFollowParams struct {
 }
 
 func (q *Queries) DeleteFollow(ctx context.Context, arg DeleteFollowParams) error {
-	_, err := q.db.ExecContext(ctx, deleteFollow, arg.FollowerID, arg.FollowingID)
+	_, err := q.db.Exec(ctx, deleteFollow, arg.FollowerID, arg.FollowingID)
 	return err
 }
 
@@ -72,7 +72,7 @@ type ListFollowersRow struct {
 }
 
 func (q *Queries) ListFollowers(ctx context.Context, followingID int64) ([]ListFollowersRow, error) {
-	rows, err := q.db.QueryContext(ctx, listFollowers, followingID)
+	rows, err := q.db.Query(ctx, listFollowers, followingID)
 	if err != nil {
 		return nil, err
 	}
@@ -93,9 +93,6 @@ func (q *Queries) ListFollowers(ctx context.Context, followingID int64) ([]ListF
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -130,7 +127,7 @@ type ListFollowingRow struct {
 }
 
 func (q *Queries) ListFollowing(ctx context.Context, followerID int64) ([]ListFollowingRow, error) {
-	rows, err := q.db.QueryContext(ctx, listFollowing, followerID)
+	rows, err := q.db.Query(ctx, listFollowing, followerID)
 	if err != nil {
 		return nil, err
 	}
@@ -151,9 +148,6 @@ func (q *Queries) ListFollowing(ctx context.Context, followerID int64) ([]ListFo
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

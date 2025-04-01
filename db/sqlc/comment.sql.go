@@ -25,7 +25,7 @@ type CreateCommentParams struct {
 }
 
 func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) (Comment, error) {
-	row := q.db.QueryRowContext(ctx, createComment, arg.UserID, arg.PostID, arg.Content)
+	row := q.db.QueryRow(ctx, createComment, arg.UserID, arg.PostID, arg.Content)
 	var i Comment
 	err := row.Scan(
 		&i.CommentID,
@@ -43,7 +43,7 @@ WHERE comment_id = $1
 `
 
 func (q *Queries) DeleteComment(ctx context.Context, commentID int64) error {
-	_, err := q.db.ExecContext(ctx, deleteComment, commentID)
+	_, err := q.db.Exec(ctx, deleteComment, commentID)
 	return err
 }
 
@@ -53,7 +53,7 @@ WHERE comment_id = $1
 `
 
 func (q *Queries) GetCommentByID(ctx context.Context, commentID int64) (Comment, error) {
-	row := q.db.QueryRowContext(ctx, getCommentByID, commentID)
+	row := q.db.QueryRow(ctx, getCommentByID, commentID)
 	var i Comment
 	err := row.Scan(
 		&i.CommentID,
@@ -72,7 +72,7 @@ ORDER BY comment_id
 `
 
 func (q *Queries) ListCommentsByPost(ctx context.Context, postID int64) ([]Comment, error) {
-	rows, err := q.db.QueryContext(ctx, listCommentsByPost, postID)
+	rows, err := q.db.Query(ctx, listCommentsByPost, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -90,9 +90,6 @@ func (q *Queries) ListCommentsByPost(ctx context.Context, postID int64) ([]Comme
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

@@ -1,11 +1,11 @@
 package api
 
 import (
-	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/insta-app/db/sqlc"
+	"github.com/jackc/pgx/v5"
 )
 
 type like struct {
@@ -80,7 +80,7 @@ func (server *Server) countLikesByPost(ctx *gin.Context) {
 
 	post, err := server.store.GetPostByID(ctx, input.PostID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errResponse(err))
 			return
 		}

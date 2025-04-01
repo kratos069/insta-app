@@ -59,6 +59,11 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 
 	txResult, err := server.store.CreateUserTx(ctx, arg)
 	if err != nil {
+		if db.ErrCode(err) == db.UniqueViolation {
+			return nil, status.Errorf(codes.AlreadyExists,
+				"%s", err)
+		}
+
 		return nil, status.Errorf(codes.Internal,
 			"failed to create user in db: %s", err)
 	}

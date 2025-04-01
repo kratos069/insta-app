@@ -22,10 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-VERSION="2.2.4"
-
 set -- "$@" -- "$TIMEOUT" "$QUIET" "$PROTOCOL" "$HOST" "$PORT" "$result"
-TIMEOUT=60  # Increased timeout to 60 seconds
+TIMEOUT=15
 QUIET=0
 # The protocol to make the request with, either "tcp" or "http"
 PROTOCOL="tcp"
@@ -41,8 +39,6 @@ Usage:
   $0 host:port|url [-t timeout] [-- command args]
   -q | --quiet                        Do not output any status messages
   -t TIMEOUT | --timeout=timeout      Timeout in seconds, zero for no timeout
-                                      Defaults to 60 seconds
-  -v | --version                      Show the version of this tool
   -- COMMAND ARGS                     Execute command with args after the test finishes
 USAGE
   exit "$exitcode"
@@ -56,25 +52,21 @@ wait_for() {
         exit 1
       fi
       ;;
-    http)
+    wget)
       if ! command -v wget >/dev/null; then
-        echoerr 'wget command is missing!'
+        echoerr 'nc command is missing!'
         exit 1
       fi
       ;;
   esac
 
-  TIMEOUT_END=$(($(date +%s) + TIMEOUT))
-
   while :; do
     case "$PROTOCOL" in
-      tcp)
-        echo "Testing connection to $HOST:$PORT..."
-        nc -w 1 -z "$HOST" "$PORT" > /dev/null 2>&1
+      tcp) 
+        nc -z "$HOST" "$PORT" > /dev/null 2>&1
         ;;
       http)
-        echo "Testing HTTP connection to $HOST..."
-        wget --timeout=1 --tries=1 -q "$HOST" -O /dev/null > /dev/null 2>&1
+        wget --timeout=1 -q "$HOST" -O /dev/null > /dev/null 2>&1 
         ;;
       *)
         echoerr "Unknown protocol '$PROTOCOL'"
@@ -83,22 +75,8 @@ wait_for() {
     esac
 
     result=$?
-
+        
     if [ $result -eq 0 ] ; then
-      echo "Connection to $HOST:$PORT successful!"
-      echo "Waiting for PostgreSQL to fully initialize..."
-
-      # Check if PostgreSQL is ready to accept queries
-      if command -v psql >/dev/null; then
-        while ! psql -h "$HOST" -p "$PORT" -U root -d insta-app -c "SELECT 1" > /dev/null 2>&1; do
-          echo "PostgreSQL is not ready yet, retrying in 1 second..."
-          sleep 1
-        done
-      else
-        echo "psql command is missing! Falling back to sleep..."
-        sleep 5  # Fallback delay if psql is not available
-      fi
-
       if [ $# -gt 7 ] ; then
         for result in $(seq $(($# - 7))); do
           result=$1
@@ -113,13 +91,15 @@ wait_for() {
       exit 0
     fi
 
-    if [ $TIMEOUT -ne 0 -a $(date +%s) -ge $TIMEOUT_END ]; then
-      echoerr "Operation timed out after $TIMEOUT seconds"
-      exit 1
+    if [ "$TIMEOUT" -le 0 ]; then
+      break
     fi
+    TIMEOUT=$((TIMEOUT - 1))
 
     sleep 1
   done
+  echo "Operation timed out" >&2
+  exit 1
 }
 
 while :; do
@@ -133,10 +113,6 @@ while :; do
     HOST=$(printf "%s\n" "$1"| cut -d : -f 1)
     PORT=$(printf "%s\n" "$1"| cut -d : -f 2)
     shift 1
-    ;;
-    -v | --version)
-    echo $VERSION
-    exit
     ;;
     -q | --quiet)
     QUIET=1

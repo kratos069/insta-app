@@ -8,6 +8,7 @@ Project insta_app {
 Table users as U {
   user_id bigserial [pk]
   username varchar [unique, not null]
+  role varchar [not null, default: 'customer']
   hashed_password varchar [not null]
   full_name varchar [not null]
   profile_picture varchar [not null]

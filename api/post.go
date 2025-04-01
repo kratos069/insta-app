@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"log"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 	db "github.com/insta-app/db/sqlc"
 	"github.com/insta-app/token"
 	"github.com/insta-app/util"
+	"github.com/jackc/pgx/v5"
 )
 
 func (server *Server) createPost(ctx *gin.Context) {
@@ -61,7 +61,7 @@ func (server *Server) getPost(ctx *gin.Context) {
 
 	getPost, err := server.store.GetPostByID(ctx, postIdReq.PostID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errResponse(err))
 			return
 		}

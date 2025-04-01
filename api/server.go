@@ -42,7 +42,8 @@ func (server *Server) setupRoutes() {
 	router.POST("/users/login", server.loginUser)
 	router.POST("/tokens/renew_access", server.renewAccessToken)
 
-	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker,
+		[]string{util.AdminRole, util.CustomerRole}))
 
 	authRoutes.GET("/users/:user_id", server.getUserByID)
 	authRoutes.DELETE("/users/:user_id", server.deleteUser)

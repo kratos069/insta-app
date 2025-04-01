@@ -2,12 +2,12 @@ package gapi
 
 import (
 	"context"
-	"database/sql"
 
 	db "github.com/insta-app/db/sqlc"
 	"github.com/insta-app/pb"
 	"github.com/insta-app/util"
 	"github.com/insta-app/val"
+	"github.com/jackc/pgx/v5"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,14 +16,14 @@ import (
 
 func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 	*pb.LoginUserResponse, error) {
-		violations := validateLoginUserRequest(req)
-		if violations != nil {
-			return nil, invalidArgumentError(violations)
-		}
+	violations := validateLoginUserRequest(req)
+	if violations != nil {
+		return nil, invalidArgumentError(violations)
+	}
 
 	user, err := server.store.GetUserByUsername(ctx, req.GetUsername())
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			return nil, status.Errorf(codes.NotFound,
 				"cant find user in db: %s", err)
 		}
@@ -41,6 +41,7 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
 		user.Username,
 		user.UserID,
+		user.Role,
 		server.config.AccessTokenDuration,
 	)
 	if err != nil {
@@ -52,6 +53,7 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(
 		user.Username,
 		user.UserID,
+		user.Role,
 		server.config.RefreshTokenDuration,
 	)
 	if err != nil {

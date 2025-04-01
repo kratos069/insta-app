@@ -25,7 +25,7 @@ type CreatePostParams struct {
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
-	row := q.db.QueryRowContext(ctx, createPost, arg.UserID, arg.ContentUrl, arg.Caption)
+	row := q.db.QueryRow(ctx, createPost, arg.UserID, arg.ContentUrl, arg.Caption)
 	var i Post
 	err := row.Scan(
 		&i.PostID,
@@ -43,7 +43,7 @@ WHERE post_id = $1
 `
 
 func (q *Queries) DeletePost(ctx context.Context, postID int64) error {
-	_, err := q.db.ExecContext(ctx, deletePost, postID)
+	_, err := q.db.Exec(ctx, deletePost, postID)
 	return err
 }
 
@@ -53,7 +53,7 @@ WHERE post_id = $1 LIMIT 1
 `
 
 func (q *Queries) GetPostByID(ctx context.Context, postID int64) (Post, error) {
-	row := q.db.QueryRowContext(ctx, getPostByID, postID)
+	row := q.db.QueryRow(ctx, getPostByID, postID)
 	var i Post
 	err := row.Scan(
 		&i.PostID,
@@ -72,7 +72,7 @@ ORDER BY post_id
 `
 
 func (q *Queries) ListPostsByUser(ctx context.Context, userID int64) ([]Post, error) {
-	rows, err := q.db.QueryContext(ctx, listPostsByUser, userID)
+	rows, err := q.db.Query(ctx, listPostsByUser, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -90,9 +90,6 @@ func (q *Queries) ListPostsByUser(ctx context.Context, userID int64) ([]Post, er
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -113,7 +110,7 @@ type UpdatePostParams struct {
 }
 
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
-	row := q.db.QueryRowContext(ctx, updatePost, arg.PostID, arg.Caption)
+	row := q.db.QueryRow(ctx, updatePost, arg.PostID, arg.Caption)
 	var i Post
 	err := row.Scan(
 		&i.PostID,
