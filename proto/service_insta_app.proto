@@ -6,9 +6,6 @@ import "google/api/annotations.proto";
 import "rpc_create_user.proto";
 import "rpc_update_user.proto";
 import "rpc_login_user.proto";
-import "rpc_create_post.proto";
-import "rpc_get_post.proto";
-import "rpc_delete_post.proto";
 import "rpc_verify_email.proto";
 
 option go_package = "github.com/insta-app/pb";
@@ -30,22 +27,6 @@ service InstaApp {
         option (google.api.http) = {
             post: "/v1/login_user"
             body: "*"
-        };
-    }
-    rpc CreatePost (stream CreatePostRequest) returns (CreatePostResponse) {
-        option (google.api.http) = {
-            post: "/v1/create_post"
-            body: "*"
-        };
-    }
-    rpc GetPost (GetPostRequest) returns (GetPostResponse) {
-        option (google.api.http) = {
-            get: "/v1/get_post/{post_id}"
-        };
-    }
-    rpc DeletePost (DeletePostRequest) returns (DeletePostResponse) {
-        option (google.api.http) = {
-            delete: "/v1/delete_post/{post_id}"
         };
     }
     rpc VerifyEmail (VerifyEmailRequest) returns (VerifyEmailResponse) {
