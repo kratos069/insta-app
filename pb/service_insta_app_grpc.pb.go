@@ -22,9 +22,6 @@ const (
 	InstaApp_CreateUser_FullMethodName  = "/pb.InstaApp/CreateUser"
 	InstaApp_UpdateUser_FullMethodName  = "/pb.InstaApp/UpdateUser"
 	InstaApp_LoginUser_FullMethodName   = "/pb.InstaApp/LoginUser"
-	InstaApp_CreatePost_FullMethodName  = "/pb.InstaApp/CreatePost"
-	InstaApp_GetPost_FullMethodName     = "/pb.InstaApp/GetPost"
-	InstaApp_DeletePost_FullMethodName  = "/pb.InstaApp/DeletePost"
 	InstaApp_VerifyEmail_FullMethodName = "/pb.InstaApp/VerifyEmail"
 )
 
@@ -35,9 +32,6 @@ type InstaAppClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
-	CreatePost(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[CreatePostRequest, CreatePostResponse], error)
-	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*GetPostResponse, error)
-	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
 	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*VerifyEmailResponse, error)
 }
 
@@ -79,39 +73,6 @@ func (c *instaAppClient) LoginUser(ctx context.Context, in *LoginUserRequest, op
 	return out, nil
 }
 
-func (c *instaAppClient) CreatePost(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[CreatePostRequest, CreatePostResponse], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &InstaApp_ServiceDesc.Streams[0], InstaApp_CreatePost_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[CreatePostRequest, CreatePostResponse]{ClientStream: stream}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type InstaApp_CreatePostClient = grpc.ClientStreamingClient[CreatePostRequest, CreatePostResponse]
-
-func (c *instaAppClient) GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*GetPostResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetPostResponse)
-	err := c.cc.Invoke(ctx, InstaApp_GetPost_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *instaAppClient) DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeletePostResponse)
-	err := c.cc.Invoke(ctx, InstaApp_DeletePost_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *instaAppClient) VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*VerifyEmailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(VerifyEmailResponse)
@@ -129,9 +90,6 @@ type InstaAppServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
-	CreatePost(grpc.ClientStreamingServer[CreatePostRequest, CreatePostResponse]) error
-	GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error)
-	DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error)
 	VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error)
 	mustEmbedUnimplementedInstaAppServer()
 }
@@ -151,15 +109,6 @@ func (UnimplementedInstaAppServer) UpdateUser(context.Context, *UpdateUserReques
 }
 func (UnimplementedInstaAppServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
-}
-func (UnimplementedInstaAppServer) CreatePost(grpc.ClientStreamingServer[CreatePostRequest, CreatePostResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method CreatePost not implemented")
-}
-func (UnimplementedInstaAppServer) GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPost not implemented")
-}
-func (UnimplementedInstaAppServer) DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeletePost not implemented")
 }
 func (UnimplementedInstaAppServer) VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmail not implemented")
@@ -239,49 +188,6 @@ func _InstaApp_LoginUser_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _InstaApp_CreatePost_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(InstaAppServer).CreatePost(&grpc.GenericServerStream[CreatePostRequest, CreatePostResponse]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type InstaApp_CreatePostServer = grpc.ClientStreamingServer[CreatePostRequest, CreatePostResponse]
-
-func _InstaApp_GetPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPostRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(InstaAppServer).GetPost(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: InstaApp_GetPost_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InstaAppServer).GetPost(ctx, req.(*GetPostRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _InstaApp_DeletePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeletePostRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(InstaAppServer).DeletePost(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: InstaApp_DeletePost_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InstaAppServer).DeletePost(ctx, req.(*DeletePostRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _InstaApp_VerifyEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VerifyEmailRequest)
 	if err := dec(in); err != nil {
@@ -320,24 +226,10 @@ var InstaApp_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _InstaApp_LoginUser_Handler,
 		},
 		{
-			MethodName: "GetPost",
-			Handler:    _InstaApp_GetPost_Handler,
-		},
-		{
-			MethodName: "DeletePost",
-			Handler:    _InstaApp_DeletePost_Handler,
-		},
-		{
 			MethodName: "VerifyEmail",
 			Handler:    _InstaApp_VerifyEmail_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "CreatePost",
-			Handler:       _InstaApp_CreatePost_Handler,
-			ClientStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "service_insta_app.proto",
 }
